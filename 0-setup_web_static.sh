@@ -1,48 +1,36 @@
 #!/usr/bin/env bash
-# sets up my web servers for the deployment of web_static
+# Install Nginx if not already installed
+if ! command -v nginx &> /dev/null; then
+    sudo apt-get update
+    sudo apt-get -y install nginx
+fi
 
-echo -e "\e[1;32m START\e[0m"
-
-#--Updating the packages
-sudo apt-get -y update
-sudo apt-get -y install nginx
-echo -e "\e[1;32m Packages updated\e[0m"
-echo
-
-#--configure firewall
-sudo ufw allow 'Nginx HTTP'
-echo -e "\e[1;32m Allow incomming NGINX HTTP connections\e[0m"
-echo
-
-#--created the dir
+# Create necessary directories
 sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
-echo -e "\e[1;32m directories created"
-echo
 
-#--adds test string
-echo "<h1>Welcome to www.beta-scribbles.tech</h1>" > /data/web_static/releases/test/index.html
-echo -e "\e[1;32m Test string added\e[0m"
-echo
+# Create a fake HTML file
+echo "<html><head></head><body>khaoulaad</body></html>" | sudo tee /data/web_static/releases/test/index.html > /dev/null
 
-#--prevent overwrite
-if [ -d "/data/web_static/current" ];
-then
-    echo "path /data/web_static/current exists"
-    sudo rm -rf /data/web_static/current;
-fi;
-echo -e "\e[1;32m prevent overwrite\e[0m"
-echo
+# Output directory contents for debugging
+ls -la /data/web_static/releases/test
 
-#--create symbolic link
-sudo ln -sf /data/web_static/releases/test/ /data/web_static/current
-sudo chown -hR ubuntu:ubuntu /data
+# Create symbolic link
+sudo rm -rf /data/web_static/current
+sudo ln -s /data/web_static/releases/test /data/web_static/current
 
-sudo sed -i '38i\\tlocation /hbnb_static/ {\n\t\talias /data/web_static/current/;\n\t}\n' /etc/nginx/sites-available/default
+# Output symbolic link information for debugging
+ls -la /data/web_static/current
 
-sudo ln -sf '/etc/nginx/sites-available/default' '/etc/nginx/sites-enabled/default'
-echo -e "\e[1;32m Symbolic link created\e[0m"
-echo
+# Give ownership to the ubuntu user and group
+sudo chown -R ubuntu:ubuntu /data
 
-#--restart NGINX
+# Output ownership information for debugging
+ls -la /data
+
+# Update Nginx configuration
+nginx_config="/etc/nginx/sites-available/default"
+sudo sed -i '/location \/hbnb_static/ {n; n; n; n; n; n; n; n; s/#/ /}' $nginx_config
+sudo sed -i '/location \/hbnb_static/ {n; n; n; n; n; n; s/#/ /}' $nginx_config
+
+# Restart Nginx
 sudo service nginx restart
-echo -e "\e[1;32m restart NGINX\e[0m"
