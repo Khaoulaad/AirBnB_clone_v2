@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Install Nginx if not already installed
-if ! command -v nginx &> /dev/null; then
+
     sudo apt-get update
     sudo apt-get -y install nginx
-fi
+
 
 # Create necessary directories
 sudo mkdir -p /data/web_static/releases/test /data/web_static/shared
