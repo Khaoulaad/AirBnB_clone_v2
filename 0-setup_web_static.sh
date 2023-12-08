@@ -29,8 +29,8 @@ ls -la /data
 
 # Update Nginx configuration
 nginx_config="/etc/nginx/sites-available/default"
-sudo sed -i '/location \/hbnb_static/ {n; n; n; n; n; n; n; n; s/#/ /}' $nginx_config
-sudo sed -i '/location \/hbnb_static/ {n; n; n; n; n; n; s/#/ /}' $nginx_config
+nginx_alias="location /hbnb_static {\n\t\talias /data/web_static/current/;\n\t}\n"
+sudo sed -i "/^\s*server_name\s/ a $nginx_alias" $nginx_config
 
 # Restart Nginx
 sudo service nginx restart
