@@ -1,53 +1,53 @@
 #!/usr/bin/python3
 """
-Fabric script to distribute an archive to web servers
+Distributing an archive to my web servers,
+using the function do_deploy
 """
+from fabric.api import *
+from datetime import datetime
+import os
 
-from fabric.api import env, put, run
-from os.path import exists
+env.hosts = ['100.26.241.75', '100.27.12.186']
+env.user = 'ubuntu'
 
-env.hosts = ['<IP web-01>', '<IP web-02>']
-env.user = 'ubuntu'  # Replace with your actual username
-env.key_filename = 'my_ssh_private_key'  # Replace with your actual private key path
+
+def do_pack():
+    """
+    Generating a tgz archive from the
+    contents of the web_static folder
+    """
+    try:
+        local('mkdir -p versions')
+        datetime_format = '%Y%m%d%H%M%S'
+        archive_path = 'versions/web_static_{}.tgz'.format(
+            datetime.now().strftime(datetime_format))
+        local('tar -cvzf {} web_static'.format(archive_path))
+        print('web_static packed: {} -> {}'.format(archive_path,
+              os.path.getsize(archive_path)))
+    except:
+        return None
+
 
 def do_deploy(archive_path):
     """
-    Distributes an archive to web servers
+    Deploying archive to web server
     """
-    if not exists(archive_path):
+    if not os.path.exists(archive_path):
         return False
-
+    file_name = archive_path.split('/')[1]
+    file_path = '/data/web_static/releases/'
+    releases_path = file_path + file_name[:-4]
     try:
-        # Upload the archive to the /tmp/ directory of the web server
         put(archive_path, '/tmp/')
-
-        # Extract the archive to the folder /data/web_static/releases/<archive filename without extension>
-        archive_filename = archive_path.split('/')[-1]
-        release_path = '/data/web_static/releases/{}'.format(
-            archive_filename.split('.')[0])
-        run('mkdir -p {}'.format(release_path))
-        run('tar -xzf /tmp/{} -C {}'.format(archive_filename, release_path))
-
-        # Delete the archive from the web server
-        run('rm /tmp/{}'.format(archive_filename))
-
-        # Move contents to the correct folder and remove the temporary directory
-        run('mv {}/web_static/* {}'.format(release_path, release_path))
-        run('rm -rf {}/web_static'.format(release_path))
-
-        # Remove the symbolic link /data/web_static/current
+        run('mkdir -p {}'.format(releases_path))
+        run('tar -xzf /tmp/{} -C {}'.format(file_name, releases_path))
+        run('rm /tmp/{}'.format(file_name))
+        run('mv {}/web_static/* {}/'.format(releases_path, releases_path))
+        run('rm -rf {}/web_static'.format(releases_path))
         run('rm -rf /data/web_static/current')
-
-        # Create a new symbolic link
-        run('ln -s {} /data/web_static/current'.format(release_path))
-
+        run('ln -s {} /data/web_static/current'.format(releases_path))
         print('New version deployed!')
         return True
-
-    except Exception as e:
-        print('Error:', str(e))
+    except:
         return False
-
-if __name__ == '__main__':
-    do_deploy('versions/web_static_20170315003959.tgz')
 
