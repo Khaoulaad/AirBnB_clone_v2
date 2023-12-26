@@ -1,25 +1,27 @@
+web_flask/0-hello_route.py
+
+
 #!/usr/bin/python3
-"""Starting a Flask web application"""
 
+""" Starts a Flash Web Application """
 
-# Importing Flask class from flask module
 from flask import Flask
 
-# Creation an instance called app of the class by passong the __name__ variable
 app = Flask(__name__)
-app.url_map.strict_slashes = False
 
 
-@app.route('/')
-def index():
-    """Displaying "Hello HBNB!"
 
-    Returns:
-        str: The index page's text
-    """
+@app.route('/', strict_slashes=False)
+
+def hello_hbnb():
+
+    """ Prints a Message when / is called """
+
     return 'Hello HBNB!'
 
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+if __name__ == "__main__":
 
+    """ Main Function """
+
+    app.run(host='0.0.0.0', port=5000)
