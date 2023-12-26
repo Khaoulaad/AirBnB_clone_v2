@@ -1,5 +1,3 @@
-S
-
 """ Starts a Flash Web Application """
 
 from flask import Flask
