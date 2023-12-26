@@ -1,7 +1,4 @@
-web_flask/0-hello_route.py
-
-
-#!/usr/bin/python3
+S
 
 """ Starts a Flash Web Application """
 
