@@ -19,7 +19,7 @@ def hbnb():
 
 @app.route('/c/<text>')
 def c_compliment(text):
-    """ Display a message starting with C """
+    """ Displaying a message starting with C """
     msg = text.replace('_', ' ')
     return 'C %s' % msg
 
@@ -27,14 +27,14 @@ def c_compliment(text):
 @app.route('/python/')
 @app.route('/python/<text>')
 def python_compliment(text='is_cool'):
-    """ Display a message starting with Python """
+    """ Displaying a message starting with Python """
     msg = text.replace('_', ' ')
     return 'Python %s' % msg
 
 
 @app.route('/number/<int:n>')
 def display_integer(n):
-    """ Display n is a number only if n is an integer """
+    """ Displaying n is a number only if n is an integer """
     return "%d is a number" % n
 
 
