@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-A script that starts a Flask web application:
+ starts a Flask web application:
 """
 
 from flask import Flask
@@ -13,9 +13,9 @@ app = Flask(__name__)
 @app.route('/states_list', strict_slashes=False)
 def states_list_route():
     """
-    List states: display a HTML page: (inside the tag BODY)
+    List states: display a HTML page
     Returns:
-        html: template that lists all states sort by name A->Z
+        html: template that lists states sort by name A->Z
     """
     states = storage.all("State").values()
     return render_template("7-states_list.html", states=states)
